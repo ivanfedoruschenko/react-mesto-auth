@@ -1,15 +1,11 @@
 import AuthWindow from "./AuthWindow";
 import React, {useState} from "react";
-import * as auth from "../utils/auth";
-import {useNavigate} from "react-router-dom";
 
 export default function Login(props){
   const [formValue, setFormValue] = useState({
     email: '',
     password: '',
   })
-
-  const navigate = useNavigate()
 
   const handleChange = (e) => {
     const {name, value} = e.target;
@@ -23,10 +19,8 @@ export default function Login(props){
   const handleSubmit=(e) =>{
     e.preventDefault()
     props.onLoginUser({...formValue})
-      .then((res) =>{
+
         setFormValue({email:"", password: ""})
-        props.login()
-      })
   }
 
 

@@ -127,8 +127,10 @@ function App() {
     auth.login(email, password)
       .then((data) => {
         if (data.token){
+          setEmail(email)
+          localStorage.setItem('token', data.token);
+          setLoggedIn(true)
           navigate('/main', {replace: true});
-
         }
       })
       .catch((error) => console.log(`Ошибка: ${error}`))
@@ -203,10 +205,6 @@ function App() {
       }
     }
   }
-  const handleLogin = (e) =>{
-    e.preventDefault()
-    setLoggedIn(true)
-  }
 
   React.useEffect(()=>{
     if(location.pathname === "/main"){
@@ -271,7 +269,7 @@ function App() {
 
           <Route path='/sign-up' element={<Register onRegisterUser={handleRegisterUser}/>}/>
 
-          <Route path="/sign-in" element={<Login login={handleLogin} onLoginUser={handleLoginUser}/>}/>
+          <Route path="/sign-in" element={<Login onLoginUser={handleLoginUser}/>}/>
 
         </Routes>
         <EditProfilePopup onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} button={buttonSaveText}/>

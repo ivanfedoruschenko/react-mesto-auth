@@ -201,7 +201,8 @@ function App() {
             setEmail(res.data.email)
             navigate("/main", {replace: true})
           }
-        });
+        })
+          .catch((error) => console.log(`Ошибка: ${error}`))
       }
     }
   }

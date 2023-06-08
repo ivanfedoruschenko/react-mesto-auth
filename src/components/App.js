@@ -101,7 +101,7 @@ function App() {
       .catch((error) => console.log(`Ошибка: ${error}`))
       .finally(res =>{
         setIsLoading(false)
-      }) //спасибо за полезные комментарии, пока исправил критические, на досуге займусь остальными комменатриями))
+      })
   }
 
   const handleRegisterUser = (data) => {

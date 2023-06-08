@@ -1,6 +1,7 @@
 import {Link} from "react-router-dom";
 import React, {useState} from "react";
 import AuthWindow from "./AuthWindow";
+import InfoTooltip from "./InfoTooltip";
 
 
 export default function Register(props){

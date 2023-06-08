@@ -14,6 +14,7 @@ import * as auth from '../utils/auth.js';
 import Login from "./Login";
 import ProtectedRouteElement from "./ProtectedRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import InfoTooltip from "./InfoTooltip";
 
 function App() {
 
@@ -35,18 +36,36 @@ function App() {
     setIsEditProfilePopupOpen(false)
     setIsAddPlacePopupOpen(false)
     setSelectedCard(null)
+    setIsStatePopupOpen(false)
   }
 
   const[isEditProfilePopupOpen,setIsEditProfilePopupOpen] = React.useState(false)
   const[isAddPlacePopupOpen,setIsAddPlacePopupOpen] = React.useState(false)
   const[isEditAvatarPopupOpen,setIsEditAvatarPopupOpen] = React.useState(false)
+  const[isStatePopupOpen,setIsStatePopupOpen] = React.useState(false)
 
   const [currentUser, setCurrentUser] = React.useState({});
   const [email, setEmail] = React.useState("")
 
   const[cards,setCards] = React.useState([])
   const[selectedCard, setSelectedCard] = React.useState(null)
+  const[stateImg,setStateImg] = React.useState("")
+  const[stateSubtitle,setStateSubtitle] = React.useState("")
 
+
+  const successRegister = () => {
+    setIsStatePopupOpen(true)
+    setStateImg("success")
+    setStateSubtitle("Вы успешно зарегистрировались!")
+    setTimeout(closeAllPopups, 1500)
+  }
+
+  const failedRegister = () => {
+    setStateImg("failed")
+    setIsStatePopupOpen(true)
+    setStateSubtitle("Что-то пошло не так! Попробуйте ещё раз.")
+    setTimeout(closeAllPopups, 1500)
+  }
 
   function handleCardDelete(id){
     api.deleteCard(id)
@@ -88,13 +107,19 @@ function App() {
   const handleRegisterUser = (data) => {
       const { email , password} = data;
       auth.register(email, password)
-        .then((res) => {
-          if(res){
+        .then((response) => {
+          if (response) {
+            successRegister()
             navigate('/sign-in', {replace: true});
+          }
+          else{
+            failedRegister()
           }
         }
       )
-        .catch((error) => console.log(`Ошибка: ${error}`))
+        .catch((error) => {
+          console.log(`Ошибка: ${error}`)
+        })
   }
 
   const handleLoginUser = (data) => {
@@ -155,8 +180,10 @@ function App() {
   const [isLoading, setIsLoading] = React.useState(false);
   const buttonSaveText= `${isLoading ? 'Сохранение...' : 'Сохранить'}`;
   const buttonCreateText= `${isLoading ? 'Создание...' : 'Создать'}`;
+
   const [buttonHeader,setButtonHeader] = React.useState("")
   const [pathHeader,setPathHeader] = React.useState("")
+
 
   const [loggedIn,setLoggedIn] = React.useState(false)
 
@@ -255,7 +282,7 @@ function App() {
 
         <ImagePopup onClose={closeAllPopups} card={selectedCard}/>
 
-
+        <InfoTooltip onClose={closeAllPopups} isOpen={isStatePopupOpen} img={stateImg} subtitle={stateSubtitle}/>
 
      {/*   <div className="popup popup_delete-card">
           <div className="popup__container popup__container_width popup__container_remove">

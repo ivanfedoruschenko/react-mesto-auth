@@ -19,10 +19,11 @@ export default function Login(props){
   const handleSubmit=(e) =>{
     e.preventDefault()
     props.onLoginUser({...formValue})
-
-        setFormValue({email:"", password: ""})
   }
 
+  React.useEffect(() => {
+    setFormValue({email:"", password: ""})
+  }, []);
 
   return(
       <AuthWindow title={"Вход"} submit={handleSubmit} button={"Войти"} register={false} name={"login"}>

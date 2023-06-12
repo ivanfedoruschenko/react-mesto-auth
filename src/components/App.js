@@ -1,6 +1,5 @@
 import Header from "./Header";
 import Main from "./Main";
-import Footer from "./Footer";
 import React from "react";
 import api from "../utils/api.js";
 import ImagePopup from "./ImagePopup";
@@ -8,17 +7,45 @@ import {CurrentUserContext} from "../contexts/CurrentUserContext";
 import EditProfilePopup from "./EditProfilePopup";
 import EditAvatarPopup from "./EditAvatarPopup";
 import AddPlacePopup from "./AddPlacePopup";
-import {Route, Routes, Navigate, useNavigate, useParams, useLocation} from 'react-router-dom';
+import {Route, Routes, Navigate, useNavigate, useLocation} from 'react-router-dom';
 import Register from "./Register";
 import * as auth from '../utils/auth.js';
 import Login from "./Login";
 import ProtectedRouteElement from "./ProtectedRoute";
-import ProtectedRoute from "./ProtectedRoute";
 import InfoTooltip from "./InfoTooltip";
+import {AppContext} from "../contexts/AppContext";
 
 function App() {
 
+  const[isEditProfilePopupOpen,setIsEditProfilePopupOpen] = React.useState(false)
+  const[isAddPlacePopupOpen,setIsAddPlacePopupOpen] = React.useState(false)
+  const[isEditAvatarPopupOpen,setIsEditAvatarPopupOpen] = React.useState(false)
+  const[isStatePopupOpen,setIsStatePopupOpen] = React.useState(false)
+  const [currentUser, setCurrentUser] = React.useState({});
+  const [email, setEmail] = React.useState("")
+  const[cards,setCards] = React.useState([])
+  const[selectedCard, setSelectedCard] = React.useState(null)
+  const[stateImg,setStateImg] = React.useState("")
+  const[stateSubtitle,setStateSubtitle] = React.useState("")
+  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard;
+  const [isLoading, setIsLoading] = React.useState(false);
+  const buttonSaveText= `${isLoading ? 'Сохранение...' : 'Сохранить'}`;
+  const buttonCreateText= `${isLoading ? 'Создание...' : 'Создать'}`;
+  const [buttonHeader,setButtonHeader] = React.useState("")
+  const [pathHeader,setPathHeader] = React.useState("")
+  const [loggedIn,setLoggedIn] = React.useState(false)
+  const location = useLocation();
+
   const navigate = useNavigate()
+
+  const handleSubmit = (request) => {
+    setIsLoading(true)
+    request()
+      .then(closeAllPopups)
+      .catch(console.error)
+      .finally(() => setIsLoading(false));
+  }
+
   function handleEditAvatar(){
     setIsEditAvatarPopupOpen(true)
   }
@@ -38,20 +65,6 @@ function App() {
     setSelectedCard(null)
     setIsStatePopupOpen(false)
   }
-
-  const[isEditProfilePopupOpen,setIsEditProfilePopupOpen] = React.useState(false)
-  const[isAddPlacePopupOpen,setIsAddPlacePopupOpen] = React.useState(false)
-  const[isEditAvatarPopupOpen,setIsEditAvatarPopupOpen] = React.useState(false)
-  const[isStatePopupOpen,setIsStatePopupOpen] = React.useState(false)
-
-  const [currentUser, setCurrentUser] = React.useState({});
-  const [email, setEmail] = React.useState("")
-
-  const[cards,setCards] = React.useState([])
-  const[selectedCard, setSelectedCard] = React.useState(null)
-  const[stateImg,setStateImg] = React.useState("")
-  const[stateSubtitle,setStateSubtitle] = React.useState("")
-
 
   const successRegister = () => {
     setIsStatePopupOpen(true)
@@ -92,16 +105,10 @@ function App() {
   }
 
   const handleUpdateUser = (data) =>{
-    setIsLoading(true)
-    api.patchUserInfo(data)
-      .then(res =>{
-        setCurrentUser(res)
-        closeAllPopups()
-      })
-      .catch((error) => console.log(`Ошибка: ${error}`))
-      .finally(res =>{
-        setIsLoading(false)
-      })
+    function makeRequest(){
+      return api.patchUserInfo(data).then(setCurrentUser)
+    }
+    handleSubmit(makeRequest)
   }
 
   const handleRegisterUser = (data) => {
@@ -119,6 +126,7 @@ function App() {
       )
         .catch((error) => {
           console.log(`Ошибка: ${error}`)
+          failedRegister()
         })
   }
 
@@ -133,35 +141,24 @@ function App() {
           navigate('/main', {replace: true});
         }
       })
-      .catch((error) => console.log(`Ошибка: ${error}`))
+      .catch((error) => {
+        console.log(`Ошибка: ${error}`)
+        failedRegister()
+      })
   }
 
   const handleUpdateAvatar = (data) =>{
-    setIsLoading(true)
-    api.patchAvatar(data)
-      .then(res =>{
-        setCurrentUser(res)
-        closeAllPopups()
-      })
-      .catch((error) => console.log(`Ошибка: ${error}`))
-      .finally(res =>{
-        setIsLoading(false)
-      })
+    function makeRequest(){
+      return api.patchAvatar(data).then(setCurrentUser)
+    }
+    handleSubmit(makeRequest)
   }
 
-  const location = useLocation();
-
   const handlePostNewPlace = (data) =>{
-    setIsLoading(true)
-    api.postNewCard(data)
-      .then(res =>{
-        setCards([res,...cards])
-        closeAllPopups()
-      })
-      .catch((error) => console.log(`Ошибка: ${error}`))
-      .finally(res =>{
-        setIsLoading(false)
-      })
+    function makeRequest(){
+      return  api.postNewCard(data).then(res => setCards([res,...cards]))
+    }
+    handleSubmit(makeRequest)
   }
 
   React.useEffect(()=>{
@@ -177,17 +174,6 @@ function App() {
     })
     .catch((error) => console.log(`Ошибка: ${error}`))
  },[])
-
-  const isOpen = isEditAvatarPopupOpen || isEditProfilePopupOpen || isAddPlacePopupOpen || selectedCard;
-  const [isLoading, setIsLoading] = React.useState(false);
-  const buttonSaveText= `${isLoading ? 'Сохранение...' : 'Сохранить'}`;
-  const buttonCreateText= `${isLoading ? 'Создание...' : 'Создать'}`;
-
-  const [buttonHeader,setButtonHeader] = React.useState("")
-  const [pathHeader,setPathHeader] = React.useState("")
-
-
-  const [loggedIn,setLoggedIn] = React.useState(false)
 
   const tokenCheck = () =>{
     if (localStorage.getItem('token')){
@@ -249,52 +235,55 @@ function App() {
   },[])
 
   return (
-    <CurrentUserContext.Provider value={currentUser}>
-      <div className="body">
-        <Header email={email} path={pathHeader} link={buttonHeader} signOut={signOut}/>
+    <AppContext.Provider value={{closeAllPopups}}>
+      <CurrentUserContext.Provider value={currentUser}>
+        <div className="body">
+          <Header email={email} path={pathHeader} link={buttonHeader} signOut={signOut}/>
 
-        <Routes>
+          <Routes>
 
-          <Route path="/" element={loggedIn ? <Navigate to="/main" replace/> : <Navigate to="/sign-up" replace/>}/>
+            <Route path="/" element={loggedIn ? <Navigate to="/main" replace/> : <Navigate to="/sign-up" replace/>}/>
 
-          <Route path="/main" element={<ProtectedRouteElement element={Main}  path="/main"
-                                                              loggedIn={loggedIn}
-                                                              cards={cards} isOpen={isEditAvatarPopupOpen}
-                                                              onCardLike={handleCardLike}
-                                                              onCardDislike={handleCardDislike}
-                                                              onCardDelete={handleCardDelete}
-                                                              onEditAvatar={handleEditAvatar}
-                                                              onEditProfile={handleEditProfileClick}
-                                                              onAddPlace={handleAddPlaceClick}
-                                                              onCardClick={setSelectedCard}/>}/>
+            <Route path="/main" element={<ProtectedRouteElement element={Main}  path="/main"
+                                                                loggedIn={loggedIn}
+                                                                cards={cards}
+                                                                isOpen={isEditAvatarPopupOpen}
+                                                                onCardLike={handleCardLike}
+                                                                onCardDislike={handleCardDislike}
+                                                                onCardDelete={handleCardDelete}
+                                                                onEditAvatar={handleEditAvatar}
+                                                                onEditProfile={handleEditProfileClick}
+                                                                onAddPlace={handleAddPlaceClick}
+                                                                onCardClick={setSelectedCard}/>}/>
 
-          <Route path='/sign-up' element={<Register onRegisterUser={handleRegisterUser}/>}/>
+            <Route path='/sign-up' element={<Register onRegisterUser={handleRegisterUser}/>}/>
 
-          <Route path="/sign-in" element={<Login onLoginUser={handleLoginUser}/>}/>
+            <Route path="/sign-in" element={<Login onLoginUser={handleLoginUser}/>}/>
 
-        </Routes>
-        <EditProfilePopup onClose={closeAllPopups} isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} button={buttonSaveText}/>
+          </Routes>
+          <EditProfilePopup isOpen={isEditProfilePopupOpen} onUpdateUser={handleUpdateUser} button={buttonSaveText}/>
 
-        <AddPlacePopup onClose={closeAllPopups} isOpen={isAddPlacePopupOpen} onPostNewPlace={handlePostNewPlace} button={buttonCreateText}/>
+          <AddPlacePopup isOpen={isAddPlacePopupOpen} onPostNewPlace={handlePostNewPlace} button={buttonCreateText}/>
 
-        <EditAvatarPopup onClose={closeAllPopups} isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} button={buttonSaveText}/>
+          <EditAvatarPopup isOpen={isEditAvatarPopupOpen} onUpdateAvatar={handleUpdateAvatar} button={buttonSaveText}/>
 
-        <ImagePopup onClose={closeAllPopups} card={selectedCard}/>
+          <ImagePopup card={selectedCard}/>
 
-        <InfoTooltip onClose={closeAllPopups} isOpen={isStatePopupOpen} img={stateImg} subtitle={stateSubtitle}/>
+          <InfoTooltip isOpen={isStatePopupOpen} img={stateImg} subtitle={stateSubtitle}/>
 
-     {/*   <div className="popup popup_delete-card">
-          <div className="popup__container popup__container_width popup__container_remove">
-            <h2 className="popup__title">Вы уверены?</h2>
-            <form className="popup__submit" noValidate>
-              <button type="submit" className="popup__button popup__button_remove" name="popup__button">Да</button>
-            </form>
-            <button type="button" className="blackout popup__close"></button>
-          </div>
-        </div>*/}
+       {/*   <div className="popup popup_delete-card">
+            <div className="popup__container popup__container_width popup__container_remove">
+              <h2 className="popup__title">Вы уверены?</h2>
+              <form className="popup__submit" noValidate>
+                <button type="submit" className="popup__button popup__button_remove" name="popup__button">Да</button>
+              </form>
+              <button type="button" className="blackout popup__close"></button>
+            </div>
+          </div>*/}
 
-      </div>
-    </CurrentUserContext.Provider>
+        </div>
+      </CurrentUserContext.Provider>
+    </AppContext.Provider>
   );
 }
 

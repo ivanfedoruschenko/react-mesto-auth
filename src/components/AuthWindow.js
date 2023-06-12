@@ -10,7 +10,7 @@ export default function AuthWindow(props){
         {props.children}
         <button type="submit" className="blackout auth__button">{props.button}</button>
       </form>
-      <p className={props.name === "register" ? "auth__paragraph" : "auth__paragraph_disabled"}>Уже зарегистрированы?<Link className='auth__link' to='/'>Войти</Link></p>
+      <p className={props.name === "register" ? "auth__paragraph" : "auth__paragraph_disabled"}>Уже зарегистрированы?<Link className='auth__link' to='/sign-in'>Войти</Link></p>
     </section>
   )
 }

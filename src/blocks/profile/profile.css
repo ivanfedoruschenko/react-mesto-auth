@@ -1,4 +1,4 @@
-.profile{
+.profile {
   display: flex;
   width: 90%;
   max-width: 880px;
@@ -7,7 +7,7 @@
 }
 
 @media screen and (max-width: 768px) {
-  .profile{
+  .profile {
     width: 95%;
     flex-direction: column;
     justify-content: center;

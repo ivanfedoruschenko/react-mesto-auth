@@ -1,10 +1,10 @@
-.popup__close{
+.popup__close {
   position: absolute;
   background-color: rgba(0, 0, 0, 0);
-  background-image: url("../../../images/popup__cross.png");
+  background-image: url('../../../images/popup__cross.png');
   width: 32px;
   height: 32px;
-  top:-40px;
+  top: -40px;
   right: -40px;
   cursor: pointer;
   background-size: cover;
@@ -12,8 +12,8 @@
   border: none;
 }
 
-@media screen and (max-width: 768px){
-  .popup__close{
+@media screen and (max-width: 768px) {
+  .popup__close {
     width: 20px;
     height: 20px;
     top: -36px;

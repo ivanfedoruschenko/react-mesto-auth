@@ -1,4 +1,4 @@
-.popup__button{
+.popup__button {
   color: rgba(255, 255, 255, 1);
   background-color: black;
   width: 358px;
@@ -15,12 +15,12 @@
   border: none;
 }
 
-.popup__button:hover{
+.popup__button:hover {
   background-color: rgba(0, 0, 0, 0.8);
 }
 
 @media screen and (max-width: 768px) {
-  .popup__button{
+  .popup__button {
     font-size: 14px;
     line-height: 17px;
     width: 238px;

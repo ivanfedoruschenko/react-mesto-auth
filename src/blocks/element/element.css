@@ -1,6 +1,6 @@
-.element{
+.element {
   display: flex;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 10px;
   flex-direction: column;
   max-width: 282px;

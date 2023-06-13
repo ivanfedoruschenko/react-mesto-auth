@@ -1,4 +1,4 @@
-.profile__name{
+.profile__name {
   color: white;
   margin: 0;
   font-weight: 500;
@@ -10,8 +10,8 @@
   overflow: hidden;
 }
 
-@media screen and (max-width: 768px){
-  .profile__name{
+@media screen and (max-width: 768px) {
+  .profile__name {
     margin-top: 30px;
     font-size: 27px;
     line-height: 26px;

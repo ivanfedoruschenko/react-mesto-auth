@@ -26,7 +26,7 @@ export default function AddPlacePopup(props) {
   React.useEffect(() => {
     setPlaceName('');
     setPlaceLink('');
-  }, []);
+  }, [props.isOpen]);
 
   return (
     // eslint-disable-next-line react/prop-types

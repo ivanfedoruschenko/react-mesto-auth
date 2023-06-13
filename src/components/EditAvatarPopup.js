@@ -20,7 +20,7 @@ export default function EditAvatarPopup(props) {
 
   React.useEffect(() => {
     setAvatar('');
-  }, []);
+  }, [props.isOpen]);
 
   return (
     <PopupWithForm

@@ -1,7 +1,5 @@
 <h1 align="center">Проект "Mesto"</h1>
 
----
-
 <h2 align="center">Стек</h2>
 
 <div align="center">
@@ -16,6 +14,12 @@
 ![bem](https://img.shields.io/badge/bem-708090?style=for-the-badge&logo=bem)
 
 </div>
+
+---
+
+<h2>Ссылка на демо</h2>
+
+<p>https://ivanfedoruschenko.github.io/react-mesto-auth/</p>
 
 ---
 

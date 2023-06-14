@@ -17,7 +17,7 @@
 
 ---
 
-<h2>Ссылка на демо</h2>
+<h2 align="center">Ссылка на демо</h2>
 
 <p>https://ivanfedoruschenko.github.io/react-mesto-auth/</p>
 
